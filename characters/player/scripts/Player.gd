@@ -1,18 +1,54 @@
+"""
+@file Player.gd
+@brief Script for controlling the player character in the game.
+
+This script handles player movement, direction, state, and animations.
+
+@note Original code by Mike Malaska.
+"""
+
 class_name Player extends CharacterBody2D
 
+"""
+@brief The cardinal direction the player is facing.
+"""
 var cardinal_direction : Vector2 = Vector2.DOWN
+
+"""
+@brief The current movement direction of the player.
+"""
 var direction : Vector2 = Vector2.ZERO
+
+"""
+@brief The current state of the player (e.g., "idle", "walk").
+"""
 var state : String = "idle"
 
-
+"""
+@brief Reference to the AnimationPlayer node for handling animations.
+"""
 @onready var animation_player : AnimationPlayer = $AnimationPlayer
+
+"""
+@brief Reference to the Sprite2D node for handling sprite transformations.
+"""
 @onready var sprite : Sprite2D = $Sprite2D
 
+"""
+@brief The movement speed of the player.
+"""
 @export var move_speed : float = 200.0
 
+"""
+@brief Called when the node is added to the scene.
+"""
 func _ready():
 	pass
 
+"""
+@brief Called every frame to process input and update the player's state.
+@param delta The frame time in seconds.
+"""
 func _process(delta):
 	# Get input direction
 	direction.x = Input.get_action_strength("right") - Input.get_action_strength("left")
@@ -28,9 +64,17 @@ func _process(delta):
 	if SetState() == true || SetDirection() == true:
 		UpdateAnimation()
 	
+"""
+@brief Called every physics frame to handle movement.
+@param delta The frame time in seconds.
+"""
 func _physics_process(delta):
 	move_and_slide()
 
+"""
+@brief Updates the player's cardinal direction based on input.
+@return True if the direction changed, otherwise false.
+"""
 func SetDirection() -> bool :
 	var new_dir : Vector2 = cardinal_direction
 	if direction == Vector2.ZERO:
@@ -46,6 +90,10 @@ func SetDirection() -> bool :
 	sprite.scale.x = -1 if cardinal_direction == Vector2.LEFT else 1
 	return true
 	
+"""
+@brief Updates the player's state based on movement.
+@return True if the state changed, otherwise false.
+"""
 func SetState() -> bool : 
 	var new_state : String = "idle" if direction == Vector2.ZERO else "walk"
 	if new_state == state:
@@ -53,10 +101,17 @@ func SetState() -> bool :
 	state = new_state
 	return true
 	
+"""
+@brief Updates the player's animation based on the current state and direction.
+"""
 func UpdateAnimation() -> void : 
 	animation_player.play(state + "_" + AnimDirection())
 	pass
 	
+"""
+@brief Determines the animation direction string based on the cardinal direction.
+@return A string representing the animation direction ("down", "up", or "side").
+"""
 func AnimDirection() -> String :
 	if cardinal_direction == Vector2.DOWN:
 		return "down"
@@ -64,4 +119,4 @@ func AnimDirection() -> String :
 		return "up"
 	else:
 		return "side"
-	
+
